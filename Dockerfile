@@ -1,15 +1,21 @@
 FROM ubuntu:20.04 AS main
 
+LABEL maintainer="Star Lab <info@starlab.io>"
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
         bash \
+        bc \
         bison \
         build-essential \
+        ccache \
         flex \
+        gcc-8 \
         git \
+        libelf-dev \
         libssl-dev \
         openssh-server \
         pigz \
@@ -19,6 +25,7 @@ RUN apt-get update && \
         qemu-kvm \
         qemu-system-x86 \
         remake \
+        rpm \
         sudo \
         vim \
         wget \
@@ -27,6 +34,8 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists* /tmp/* /var/tmp/*
+
+RUN ln -sf /usr/bin/gcc-8 /usr/bin/gcc
 
 ARG GO_VER=1.14.2
 ARG GO_TARBALL=go${GO_VER}.linux-amd64.tar.gz
@@ -114,21 +123,3 @@ COPY --from=bash /tmp/bash_install /
 
 ENTRYPOINT ["/usr/local/bin/startup_script"]
 CMD ["/bin/bash", "-l"]
-
-LABEL maintainer="Pete Dietl <pete.dietl@starlab.io>"
-
-
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y \
-        bc \
-        libelf-dev \
-        gcc-8 \
-        rpm \
-        ccache \
-        && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists* /tmp/* /var/tmp/*
-
-RUN ln -sf /usr/bin/gcc-8 /usr/bin/gcc
